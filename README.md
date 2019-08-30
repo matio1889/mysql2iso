@@ -99,7 +99,7 @@
  1. 状态数据保存到一个mysql数据库中，账号需要create权限，状态库名为dump2db
  2. 如果目标库为mysql,目标库账号需要information_schema.columns表的查询权限以及对应库表的操作权限
  3. 源库replication slave权限，如果在线导出需要对应库表的查询权限
- 4. 只实现了追加binlog中row数据操作，binlog必须位row格式
+ 4. 只实现了追加binlog中row数据操作，binlog必须为row格式
  5. 如果多个任务或多线程执行同一任务时使用同样的dump2db需要使用不同的serverid,因为dump2db以serverid进行区分
  6. 在线导出数据会短暂全库读锁，在初始化完成所有链接并获取到当前binlog信息时会释放
  7. 全量导出途中如果某一个线程在操作途中发生错误将退出整个任务，以免发生数据不一致的情况
