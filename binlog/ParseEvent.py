@@ -12,14 +12,15 @@ from binlog import Metadata,ReadPacket
 
 
 class ParseEvent(ReadPacket.Read):
-    def __init__(self,packet=None,filename=None,startpostion=None,remote=None):
+    def __init__(self,packet=None,filename=None,startpostion=None,remote=None, mysql_version=5):
         self.remote = remote
+        self.mysql_version = mysql_version
         super(ParseEvent, self).__init__(packet, filename, startpostion)
 
     def read_header(self):
         '''binlog_event_header_len = 19
         timestamp : 4bytes
-        type_code : 1bytes
+        type_code : 1bytese
         server_id : 4bytes
         event_length : 4bytes
         next_position : 4bytes
@@ -64,6 +65,10 @@ class ParseEvent(ReadPacket.Read):
         database_name, = struct.unpack('{}s'.format(fix_result[2]), read_byte)
         statement_length = event_length - Metadata.binlog_event_fix_part - Metadata.binlog_event_header_len \
                            - fix_result[4] - fix_result[2] - Metadata.binlog_quer_event_stern
+        if self.mysql_version == 8:
+            statement_length = event_length - Metadata.binlog_event_fix_part - Metadata.binlog_event_header_len \
+                               - fix_result[4] - fix_result[2]
+
         read_byte = self.read_bytes(statement_length)
         _a, sql_statement, = struct.unpack('1s{}s'.format(statement_length - 1), read_byte)
         return thread_id, database_name, sql_statement
@@ -86,7 +91,7 @@ class ParseEvent(ReadPacket.Read):
         else:
             var_len = len(__pack)
             value, = struct.unpack('{}s'.format(var_len), __pack)
-        return value.decode()
+        return value.decode("utf8","ignore")
 
         # if self.remote:
         #     # end_s = self.data_packet.find(b'\0', self.packet)

@@ -94,6 +94,8 @@ class OperationDB(escape):
         self.ignores = kwargs['ignores']
         self.check_att = None                           #判断是否为附加任务的表
 
+        self.mysql_version = None                       #记录mysql版本号，用于binlog解析差异
+
     def __init_master_slave_conn(self):
         '''
         初始化同步所需的源库、目标库的链接
@@ -267,6 +269,7 @@ class OperationDB(escape):
         '''
         self.__init_master_slave_conn()  # 初始化源库、目标库同步链接
         self.__get_all_table_struct()
+        self.__get_version()            #获取源mysql版本号
         # self.cur.close()
         self.queue.put({'table_struct': [tmepdata.table_struct_list, tmepdata.table_pk_idex_list]})
 
@@ -340,7 +343,7 @@ class OperationDB(escape):
                     Logging(msg=traceback.format_exc(), level='error')
                     ReplConn.close()
 
-                _parse_event = ParseEvent(packet=pkt,remote=True)
+                _parse_event = ParseEvent(packet=pkt,remote=True, mysql_version=self.mysql_version)
                 event_code, event_length ,next_pos= _parse_event.read_header()
                 if event_code is None or event_code in (binlog_events.UNKNOWN_EVENT,binlog_events.START_EVENT_V3):
                     continue
@@ -559,6 +562,12 @@ class OperationDB(escape):
         result = self.cur.fetchall()
         return result[0]['server_uuid']
 
+    def __get_version(self):
+        sql = 'select @@version as version;'
+        self.__check_stat(self.__raise_sql(sql=sql))
+        result = self.cur.fetchall()
+        tmp = result[0]['version'].split('.')
+        self.mysql_version = int(tmp[0])
 
     def __gtid_set(self,gtid):
         '''

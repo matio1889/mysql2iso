@@ -96,7 +96,7 @@ class GetSql(escape):
                     cur_sql = 'UPDATE {}.{} SET {} WHERE {}'.format(database_name, table_name,
                                                                    self.SetJoin(table_struce_key),
                                                                    self.WhereJoin(table_struce_key))
-                    _args = row_value[1] + row_value[0]
+                    _args = _row_value[1] + row_value[0]
                 _tmp_sql_list.append([cur_sql,_args])
 
         else:

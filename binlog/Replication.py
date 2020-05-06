@@ -177,3 +177,8 @@ class ReplicationMysql:
                 break
         '''
 
+    def test(self):
+        self.gtid = '1886928a-ce21-11e9-bee2-50edb3ba887e:1-7'
+        _packet = self.GtidPackeByte()
+
+

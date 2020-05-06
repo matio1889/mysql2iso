@@ -357,7 +357,7 @@ class Read(object):
             elif value == Metadata.json_type.JSONB_LITERAL_FALSE:
                 return False
         elif t == Metadata.json_type.JSONB_TYPE_INT16:
-            return self.read_int16()
+            return self.aread_int16()
         elif t == Metadata.json_type.JSONB_TYPE_UINT16:
             return self.read_uint16()
         elif t in (Metadata.json_type.JSONB_TYPE_DOUBLE,):
@@ -375,7 +375,7 @@ class Read(object):
 
     def read_binary_json_type_inlined(self, t):
         if t == Metadata.json_type.JSONB_TYPE_LITERAL:
-            value = self.read_uint16()
+            value = self.t()
             if value == Metadata.json_type.JSONB_LITERAL_NULL:
                 return None
             elif value == Metadata.json_type.JSONB_LITERAL_TRUE:

@@ -9,6 +9,7 @@ import time
 #import threading
 from multiprocessing import Process
 from cluster.ClusterHeart import zkheartbeat
+from lib.profile import do_cprofile
 import threading,socket,traceback
 BUFSIZE = 1024
 encoding = 'utf-8'
@@ -23,6 +24,8 @@ class ThreadDump(Process):
         self.task_name = task_name
         self.zk_hosts = zk_hosts
         self._argv = _argv
+
+    @do_cprofile("./profile.prof")
     def run(self):
         '''
         启动监听或者服务线程
