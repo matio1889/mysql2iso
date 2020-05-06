@@ -25,7 +25,7 @@ class ThreadDump(Process):
         self.zk_hosts = zk_hosts
         self._argv = _argv
 
-    @do_cprofile("./profile.prof")
+
     def run(self):
         '''
         启动监听或者服务线程
