@@ -82,26 +82,23 @@ class ParseEvent(ReadPacket.Read):
         '''
         __start_s = Metadata.binlog_event_header_len + 8
         self.read_bytes(8)
-        __pack = self.read_bytes(event_length - Metadata.binlog_event_header_len - 8)
 
-        __end_s = __pack.find(b'\0', __start_s)
-        if __end_s > 0:
-            var_len = __end_s - __start_s
-            value, = struct.unpack('{}s'.format(var_len), __pack[__start_s:__end_s])
-        else:
-            var_len = len(__pack)
-            value, = struct.unpack('{}s'.format(var_len), __pack)
-        return value.decode("utf8","ignore")
+        __len = event_length - Metadata.binlog_event_header_len - 8 - 4
+        __pack = self.read_bytes(__len)
+        value, = struct.unpack('{}s'.format(__len), __pack)
+        return value.decode("utf8", "ignore")
 
-        # if self.remote:
-        #     # end_s = self.data_packet.find(b'\0', self.packet)
-        #     variable_length = event_length - Metadata.binlog_event_header_len - 8 - 1 - Metadata.src_length + 1
-        # else:
-        #     variable_length = event_length - Metadata.binlog_event_header_len - 8 - Metadata.src_length + 1
+        # __pack = self.read_bytes(event_length - Metadata.binlog_event_header_len - 8)
         #
-        # self.read_bytes(8)
-        # value, = struct.unpack('{}s'.format(variable_length),self.read_bytes(variable_length))
-        # return value.decode()
+        # __end_s = __pack.find(b'\0', __start_s)
+        # if __end_s > 0:
+        #     var_len = __end_s - __start_s
+        #     value, = struct.unpack('{}s'.format(var_len), __pack[__start_s:__end_s])
+        # else:
+        #     var_len = len(__pack)
+        #     value, = struct.unpack('{}s'.format(var_len), __pack)
+        # return value.decode("utf8","ignore")
+
 
 
     def read_table_map_event(self, event_length):
