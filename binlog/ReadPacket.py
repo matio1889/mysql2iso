@@ -96,6 +96,12 @@ class Read(object):
         a, b, c = struct.unpack("<BHI", self.read_bytes(7))
         return a + (b << 8) + (c << 24)
 
+    def read_seek(self, num):
+        if self.packet is None:
+            self.file_data.seek(num)
+        else:
+            self.packet.read(num)
+
     def read_bytes(self, count):
         try:
             return self.file_data.read(count) if self.packet is None else self.packet.read(count)
