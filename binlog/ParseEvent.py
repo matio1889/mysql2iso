@@ -240,7 +240,12 @@ class ParseEvent(ReadPacket.Read):
 
         The The data first length of the varchar type more than 255 are 2 bytes
         '''
-        self.read_bytes(Metadata.fix_length + Metadata.binlog_row_event_extra_headers)
+        bytes = 0
+        self.read_bytes(Metadata.fix_length)
+        extra_len = self.read_uint16()
+        if extra_len > 2:
+            bytes += extra_len - 2
+            self.read_seek(extra_len - 2)
         columns = self.read_uint8()
         columns_length = int((columns + 7) / 8)
         self.read_bytes(columns_length)
