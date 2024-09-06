@@ -83,11 +83,25 @@ class ParseEvent(ReadPacket.Read):
         __start_s = Metadata.binlog_event_header_len + 8
         self.read_bytes(8)
         __len = event_length - Metadata.binlog_event_header_len - 8
-        if self.mysql_version != 8:
-            __len -= 4
+        #if self.mysql_version != 8:
+        #    __len -= 4
         __pack = self.read_bytes(__len)
         value, = struct.unpack('{}s'.format(__len), __pack)
-        return value.decode("utf8", "ignore")
+        num_start = False
+        value_decode = value.decode("utf8", "ignore")
+        value = ""
+        for i in value_decode:
+            print(i.isnumeric(), num_start)
+            if i.isnumeric() :
+                value += i
+                if num_start is False:
+                    num_start = True
+            elif i.isnumeric() is False and num_start:
+                return value
+            else:
+                value += i
+        return value
+        #return value.decode("utf8", "ignore")
 
         # __pack = self.read_bytes(event_length - Metadata.binlog_event_header_len - 8)
         #
