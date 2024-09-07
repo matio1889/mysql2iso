@@ -322,6 +322,7 @@ class OperationDB(escape):
                     pkt = ReplConn._read_packet()
                 except pymysql.OperationalError:
                     '''链接断开重新注册'''
+                    Logging(msg=pymysql.OperationalError, level='error')
                     Logging(msg='retry to regist master', level='error')
                     ReplConn = self.__retry_regist_master(gtid=tmepdata.excute_gtid, binlog=binlog_file_name,
                                                           position=self.at_pos)
